@@ -1,0 +1,8 @@
+# Visual Studio
+.vs/
+
+# Builds
+bin/
+
+Debug/
+Release/

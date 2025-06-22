@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="VideoClipper.NewPage1">
+    <VerticalStackLayout>
+        <Button
+            x:Name="VideoSelect"
+            Text="Select Video"
+            SemanticProperties.Hint="Select video"
+            Clicked="PickFile" />
+        <Label
+            x:Name="FileNameLabel"
+            Text="Pick a file..."
+            SemanticProperties.Description="File name"
+            VerticalOptions="Center" 
+            HorizontalOptions="Center" />
+        <Entry
+            x:Name="StartEntryInput"
+            Text=""
+            Placeholder="Enter a start time"
+            TextChanged="OnStartEntryTextChanged"
+            VerticalOptions="Center" 
+            HorizontalOptions="Center" />
+        <Entry
+            x:Name="EndEntryInput"
+            Text=""
+            Placeholder="(Optional) Enter an end time"
+            TextChanged="OnEndEntryTextChanged"
+            VerticalOptions="Center" 
+            HorizontalOptions="Center" />
+        <Entry
+            x:Name="OutputFileNameInput"
+            Text=""
+            Placeholder="Enter a filename (default is output)"
+            TextChanged="OnOutputNameChanged"
+            VerticalOptions="Center" 
+            HorizontalOptions="Center" />
+        <HorizontalStackLayout
+                VerticalOptions="Center" 
+                HorizontalOptions="Center" >
+            <Label
+                x:Name="MuteMicLabel"
+                Text="Mute microphone track?"
+                SemanticProperties.Description="Mute mic label"
+                VerticalOptions="Center" 
+                HorizontalOptions="Center" />
+            <CheckBox
+                IsChecked="False"
+                CheckedChanged="OnMuteMicCheckBoxChanged"
+                VerticalOptions="Center" 
+                HorizontalOptions="Center" />
+        </HorizontalStackLayout>
+        <HorizontalStackLayout
+                VerticalOptions="Center" 
+                HorizontalOptions="Center" >
+            <Label
+                x:Name="OverwriteLabel"
+                Text="Overwrite file?"
+                SemanticProperties.Description="Overwrite file label"
+                VerticalOptions="Center" 
+                HorizontalOptions="Center" />
+            <CheckBox
+                IsChecked="True"
+                CheckedChanged="OnCheckBoxChanged"
+                VerticalOptions="Center" 
+                HorizontalOptions="Center" />
+        </HorizontalStackLayout>
+        <!--
+        <Button
+            x:Name="Process"
+            Text="Process Video"
+            SemanticProperties.Hint="Process video"
+            Clicked="ProcessVideo"
+            HorizontalOptions="Fill" />
+        <Label
+            x:Name="Progress"
+            Text="Progress on encode"
+            SemanticProperties.Description="ffmpeg progress"
+            VerticalOptions="Center" 
+            HorizontalOptions="Center" />
+        -->
+        <Button
+            x:Name="Command"
+            Text="Process Video"
+            SemanticProperties.Hint="Process video"
+            Clicked="CallTerminal" />
+        <Label
+            x:Name="ProgressLabel"
+            Text=""
+            SemanticProperties.Description="ffmpeg progress"
+            VerticalOptions="Center" 
+            HorizontalOptions="Center" />
+    </VerticalStackLayout>
+</ContentPage>
