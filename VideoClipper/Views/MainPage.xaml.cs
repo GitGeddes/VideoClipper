@@ -2,7 +2,7 @@ using FFMpegCore;
 using System.Diagnostics;
 namespace VideoClipper;
 
-public partial class NewPage1 : ContentPage
+public partial class MainPage : ContentPage
 {
     private FileResult videoFile;
     private string startTime;
@@ -11,7 +11,7 @@ public partial class NewPage1 : ContentPage
     private bool doMuteMic = false;
     private bool doOverwrite = true;
 
-    public NewPage1()
+    public MainPage()
 	{
 		InitializeComponent();
 	}
@@ -22,16 +22,12 @@ public partial class NewPage1 : ContentPage
         {
             PickOptions pickOptions = new()
             {
-                PickerTitle = "Please select a video to clip",
+                PickerTitle = "Please select a video to cut",
                 FileTypes = FilePickerFileType.Videos,
             };
             var result = await FilePicker.Default.PickAsync(pickOptions);
             if (result != null)
             {
-                if (result.FileName.EndsWith("mp4", StringComparison.OrdinalIgnoreCase))
-                {
-                    Debug.WriteLine(result.FileName);
-                }
                 FileNameLabel.Text = result.FileName;
             }
             return result;
@@ -52,7 +48,6 @@ public partial class NewPage1 : ContentPage
     //{
     //    Action<TimeSpan> progressHandler = new Action<TimeSpan>(p =>
     //    {
-    //        Debug.WriteLine($"Progress on encode: {p}");
     //        MainThread.BeginInvokeOnMainThread(() =>
     //        {
     //            Progress.Text = "Progress on encode: " + p.ToString("mm':'ss':'fff");
@@ -85,12 +80,6 @@ public partial class NewPage1 : ContentPage
 
     private void OnStartEntryTextChanged(object? sender, EventArgs e)
     {
-        //int start;
-        //bool success = int.TryParse(StartEntryInput.Text, out start);
-        //if (success)
-        //{
-        //    startTime = start;
-        //}
         startTime = StartEntryInput.Text;
     }
 
@@ -119,6 +108,7 @@ public partial class NewPage1 : ContentPage
         ProgressLabel.Text = "";
         if (videoFile != null)
         {
+            // This doesn't update. Is the main thread frozen?
             ProgressLabel.Text = "Processing...";
             var mediaInfo = FFProbe.Analyse(videoFile.FullPath);
             int audioStreamCount = mediaInfo.AudioStreams.Count;
@@ -129,34 +119,26 @@ public partial class NewPage1 : ContentPage
 
             if (startTime == null || startTime.Length == 0)
             {
-                Debug.WriteLine("use 0 for startTime");
+                // Start at the beginning of the clip
                 startTime = "0";
             }
 
             if (endTime == null || endTime.Length == 0)
             {
-                Debug.WriteLine("use duration for endTime" + mediaInfo.Duration);
+                // Use the clip's duration for the endTime
                 endTime = mediaInfo.Duration.ToString();
             }
 
             string overwriteOption = doOverwrite ? "-y" : "";
 
             string pathMinusFileName = videoFile.FullPath.Replace(videoFile.FileName, "");
-            string outputPath;
-            if (outputFileName != null)
-            {
-                outputPath = pathMinusFileName + outputFileName + ".mp4";
-            }
-            else
-            {
-                outputPath = pathMinusFileName + "output.mp4";
-            }
+            string outputPath = pathMinusFileName + (outputFileName != null ? outputFileName : "output") + ".mp4";
 
             Process cmd = new Process();
             cmd.StartInfo.FileName = "cmd.exe";
             cmd.StartInfo.RedirectStandardInput = true;
             cmd.StartInfo.RedirectStandardOutput = true;
-            cmd.StartInfo.CreateNoWindow = true;
+            cmd.StartInfo.CreateNoWindow = true; // Set to false if you want the terminal to open
             cmd.StartInfo.UseShellExecute = false;
             cmd.Start();
 

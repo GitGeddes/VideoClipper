@@ -7,5 +7,5 @@
     Title="VideoClipper">
 
     <ShellContent
-        ContentTemplate="{DataTemplate local:NewPage1}" />
+        ContentTemplate="{DataTemplate local:MainPage}" />
 </Shell>
