@@ -18,7 +18,7 @@ function App() {
     const [inputFilePath, setInputFilePath] = useState("");
     const [inputFolder, setInputFolder] = useState("");
 
-    const [outputFileName, setOutputFileName] = useState("test");
+    const [outputFileName, setOutputFileName] = useState("output");
     const [doMuteMicrophone, setDoMuteMicrophone] = useState(false);
     const [doOverwriteFile, setDoOverwriteFile] = useState(true);
     const [statusMsg, setStatusMsg] = useState("");
