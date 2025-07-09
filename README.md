@@ -7,13 +7,13 @@ If you don't record ShadowPlay clips with 2 audio tracks, you don't need this pr
 
 ## Installation
 1. Download and install [ffmpeg](https://ffmpeg.org/download.html).
-    1.  An easy way on Windows is to use `winget`: `winget install ffmpeg`
-2. Download VideoClipper.exe from the [Releases](https://github.com/GitGeddes/VideoClipper/releases) page.
+    1.  `winget` is an easy way to install it on Windows: `winget install ffmpeg`
+2. Download the installer from the [Releases](https://github.com/GitGeddes/VideoClipper/releases) page.
+    1. This ensures you have dependencies like vcredist and WebView2.
 
 ## Features
 - File picker
-- Text input for start and end timestamps
-    - Strings are not validated, use `mm:ss` format compatible with `ffmpeg`
+- Video preview with slider to select start and end timestamps
 - Text input for output filename
 - Mute or unmute microphone track
 - Choose whether or not to overwrite an existing output file (not tested)
@@ -21,11 +21,11 @@ If you don't record ShadowPlay clips with 2 audio tracks, you don't need this pr
 
 ## Usage
 1. Select a video to clip
-2. Enter a start/end time in the format `mm:ss`
+2. Select a start and end time with the slider
 3. (Optional) Enter a filename for the output file
 4. Choose whether to include the microphone audio track in the output
 5. Process the video
 
 The output file goes into the same folder as the selected input video.
 
-![screenshot](./VideoClipper/Resources/Images/VideoClipper-screenshot.png)
+![screenshot](./public/videoclipper_screenshot.png)
