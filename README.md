@@ -27,3 +27,5 @@ If you don't record ShadowPlay clips with 2 audio tracks, you don't need this pr
 5. Process the video
 
 The output file goes into the same folder as the selected input video.
+
+![screenshot](./public/videoclipper_screenshot.png)
