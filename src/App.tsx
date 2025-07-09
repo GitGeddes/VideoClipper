@@ -95,7 +95,7 @@ function App() {
                     pickFile();
                 }}
             >
-                Select Video
+                {inputFileName.length > 0 ? inputFileName : "Select Video"}
             </button>
             <div className='slider'>
                 <MinimumDistanceSlider
@@ -106,8 +106,6 @@ function App() {
                     seekToTime={seekToTime}
                 />
             </div>
-            {/* File name */}
-            <p>{inputFileName}</p>
             <section className="row">
                 {/* Start time input */}
                 <TimeInput
