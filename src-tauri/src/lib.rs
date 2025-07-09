@@ -1,8 +1,6 @@
 use std::io::{self, Write};
 use std::process::Command;
 
-use log::info;
-
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 // ffmpeg -ss 1:19 -to 2:00 -i input.mp4 -c:v copy -c:a aac -b:a 160k -ac 2 -filter_complex amerge=inputs=$(ffprobe -loglevel error -select_streams a -show_entries stream=index -of csv=p=0 input.mp4 | wc -l) output.mp4
 #[tauri::command(rename_all = "snake_case")]
@@ -15,10 +13,7 @@ fn callffmpeg(
     out_file: &str,
     do_overwrite: &str
 ) -> String {
-    let message = format!("status greet {}", in_folder);
-    info!("{}", message.to_string());
-    info!("amerge=inputs={}", audio_stream_count.to_string());
-
+    // TODO: Get audio track count before attempting and failing
     // let ffprobe_output = Command::new("ffprobe")
     //     .arg()
 
@@ -47,19 +42,9 @@ fn callffmpeg(
         .output()
         .expect("failed to execute process");
 
-    info!("test");
-
-    // let output = Command::new("dir")
-    //     .current_dir(in_folder)
-    //     .output()
-    //     .expect("failed to execute process");
-
-    info!("status: {}", output.status);
     let _ = io::stdout().write_all(&output.stdout);
     let _ = io::stderr().write_all(&output.stderr);
     output.status.to_string()
-    // format!("poop {}", in_file)
-    // format!("Hello, {}! You've been greeted from Rust! {}", name, in_file)
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
