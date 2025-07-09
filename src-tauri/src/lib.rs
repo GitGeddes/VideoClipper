@@ -22,6 +22,9 @@ fn callffmpeg(
     // let ffprobe_output = Command::new("ffprobe")
     //     .arg()
 
+    // Consider: Change to bundled ffmpeg.wasm version and convert to TypeScript
+    // "@ffmpeg/ffmpeg": "^0.12.15",
+    // "@ffmpeg/util": "^0.12.2",
     let output = Command::new("ffmpeg")
         .current_dir(in_folder)
         .args(["-ss", start])
