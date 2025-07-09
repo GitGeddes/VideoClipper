@@ -8,7 +8,7 @@ type CheckboxLabelProps = {
 
 export default function CheckboxLabel(props: CheckboxLabelProps) {
     return (
-        <div className="timestampContainer">
+        <div className="checkboxContainer">
             <p>{props.text}</p>
             <Checkbox
                 value={props.isValue}

@@ -4,8 +4,8 @@
 import { useState } from 'react';
 import Slider, { SliderProps } from '@mui/material/Slider';
 
-function valuetext(value: number) {
-    return `${value}`;
+function valuetext(value: number, _index: number) {
+    return `${secondsToFormattedString(value)}`;
 }
 
 function secondsToFormattedString(seconds: number): string {
@@ -16,7 +16,7 @@ function secondsToFormattedString(seconds: number): string {
 }
 
 const minVal = 0;
-const minDistance = 10;
+const minDistance = 5;
 
 type MinDistanceSliderProps = SliderProps & {
     setStartTime: (time: string) => void;
@@ -59,15 +59,15 @@ export default function MinimumDistanceSlider(props: MinDistanceSliderProps) {
     return (
         <Slider
             {...props}
-            getAriaLabel={() => 'Minimum distance shift'}
             value={values}
             onChange={handleChange}
             min={minVal}
             max={Math.max(minVal, props.max ? props.max : minVal)}
             valueLabelDisplay="auto"
+            valueLabelFormat={valuetext}
+            getAriaLabel={() => 'Minimum distance shift'}
             getAriaValueText={valuetext}
             disableSwap
-            className='slider'
         />
     );
 }

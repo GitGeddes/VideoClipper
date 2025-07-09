@@ -14,6 +14,7 @@ function App() {
     const [startTime, setStartTime] = useState("");
     const [endTime, setEndTime] = useState("");
 
+    const [inputFileName, setInputFileName] = useState("");
     const [inputFilePath, setInputFilePath] = useState("");
     const [inputFolder, setInputFolder] = useState("");
 
@@ -48,7 +49,7 @@ function App() {
         });
         setInputFilePath(file || "");
         let arr = file ? file.split("\\") : [];
-        arr.pop();
+        setInputFileName(arr.pop() || "");
         setInputFolder(arr.join("\\"));
     }
 
@@ -68,7 +69,7 @@ function App() {
             do_overwrite: doOverwriteFile ? "-y" : "-n"
         }).then((msg) => {
             if (msg !== "exit code: 0") {
-                setStatusMsg("Error! Is there only 1 audio track? Try checking the mute checkbox.")
+                setStatusMsg("Error! Only 1 audio track? Try muting mic track.")
             } else {
                 setStatusMsg("Processing complete");
             }
@@ -79,18 +80,13 @@ function App() {
 
     return (
         <main className="container">
-            <VideoPreview
-                setPlayerRef={setPlayerRef}
-                inputFilePath={inputFilePath}
-                onLoadedMetadata={onLoadedMetadata}
-            />
-            <MinimumDistanceSlider
-                disabled={inputFilePath.length === 0}
-                max={duration}
-                setStartTime={setStartTime}
-                setEndTime={setEndTime}
-                seekToTime={seekToTime}
-            />
+            <div className="videoPreview">
+                <VideoPreview
+                    setPlayerRef={setPlayerRef}
+                    inputFilePath={inputFilePath}
+                    onLoadedMetadata={onLoadedMetadata}
+                />
+            </div>
             {/* File picker button */}
             <button
                 type="submit"
@@ -101,12 +97,18 @@ function App() {
             >
                 Select Video
             </button>
+            <div className='slider'>
+                <MinimumDistanceSlider
+                    disabled={inputFilePath.length === 0}
+                    max={duration}
+                    setStartTime={setStartTime}
+                    setEndTime={setEndTime}
+                    seekToTime={seekToTime}
+                />
+            </div>
             {/* File name */}
-            <p>{inputFilePath}</p>
-            <section style={{ 
-                display: "flex",
-                justifyContent: "space-between"
-            }}>
+            <p>{inputFileName}</p>
+            <section className="row">
                 {/* Start time input */}
                 <TimeInput
                     text={"start"}
@@ -120,14 +122,8 @@ function App() {
                     setTime={setEndTime}
                 />
             </section>
-            <section style={{
-                display: "flex",
-                justifyContent: "space-between"
-            }}>
-                <section style={{ 
-                    display: "flex",
-                    flexDirection: "column",
-                }}>
+            <section className="row">
+                <section className="column">
                     {/* Mute mic checkbox */}
                     <CheckboxLabel
                         text={"Mute mic track?"}
@@ -141,12 +137,15 @@ function App() {
                         setIsValue={setDoOverwriteFile}
                     />
                 </section>
-                {/* Output filename text input */}
-                <TimeInput
-                    text={"Filename"}
-                    time={outputFileName}
-                    setTime={setOutputFileName}
-                />
+                <section className="column">
+                    {/* Output filename text input */}
+                    <TimeInput
+                        text={"Filename"}
+                        time={outputFileName}
+                        setTime={setOutputFileName}
+                    />
+                    <p>{statusMsg}</p>
+                </section>
                 {/* Call ffmpeg button */}
                 <button
                     type="submit"
@@ -155,10 +154,9 @@ function App() {
                         call_ffmpeg();
                     }}
                 >
-                    Call ffmpeg
+                    Process Video
                 </button>
             </section>
-            <p>{statusMsg}</p>
         </main>
     );
 }
