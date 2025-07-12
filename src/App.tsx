@@ -47,10 +47,12 @@ function App() {
                 extensions: ['mp4']
             }]
         });
-        setInputFilePath(file || "");
-        let arr = file ? file.split("\\") : [];
-        setInputFileName(arr.pop() || "");
-        setInputFolder(arr.join("\\"));
+        if (file) {
+            setInputFilePath(file);
+            let arr = file.split("\\");
+            setInputFileName(arr.pop() || "");
+            setInputFolder(arr.join("\\"));
+        }
     }
 
     async function call_ffmpeg() {
@@ -58,7 +60,7 @@ function App() {
             setStatusMsg("Select a file, start time and end time");
             return;
         }
-        await invoke<string>("callffmpeg",
+        await invoke<string>("call_ffmpeg",
         {
             start: startTime,
             end: endTime,
