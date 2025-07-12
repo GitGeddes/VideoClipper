@@ -1,7 +1,11 @@
+import { formattedStringToSeconds, secondsToFormattedString } from "../util/converters";
+
 type TimeInputProps = {
     text: string;
-    time: string;
-    setTime: (time: string) => void;
+    time: number;
+    setTime: (time: number) => void;
+    totalFrames: number;
+    framerate: number;
 }
 
 export default function TimeInput(props: TimeInputProps) {
@@ -10,9 +14,9 @@ export default function TimeInput(props: TimeInputProps) {
             <p className="timestampLabel">{props.text}</p>
             <input
                 className="timestampInput"
-                value={props.time}
-                onChange={(e) => props.setTime(e.currentTarget.value)}
-                onSubmit={(e) => props.setTime(e.currentTarget.value)}
+                value={secondsToFormattedString(props.time)}
+                onChange={(e) => props.setTime(formattedStringToSeconds(e.currentTarget.value))}
+                onSubmit={(e) => props.setTime(formattedStringToSeconds(e.currentTarget.value))}
                 placeholder="Enter a timestamp..."
             />
         </section>

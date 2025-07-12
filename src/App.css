@@ -50,7 +50,8 @@
 }
 
 .timestampContainer,
-.checkboxContainer {
+.checkboxContainer,
+.filenameContainer {
   display: flex;
   justify-content: space-between;
   border-radius: 0.5em;
@@ -66,14 +67,16 @@
   padding-right: 0.5em;
 }
 
-.timestampLabel {
+.timestampLabel,
+.filenameLabel {
   padding-left: 2em;
   padding-right: 2em;
   justify-content: center;
   align-self: center;
 }
 
-.timestampInput {
+.timestampInput,
+.filenameInput {
   border-radius: 0.5em;
   border-color: #e8e8e8;
   border-style: solid;

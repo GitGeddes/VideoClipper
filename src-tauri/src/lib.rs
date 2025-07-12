@@ -3,6 +3,29 @@ use std::process::Command;
 
 use log::{debug, info};
 
+#[tauri::command(rename_all = "snake_case")]
+fn get_frame_count(in_file: &str) -> i32 {
+    let ffprobe_output = Command::new("ffprobe")
+        .args(["-v", "error"])
+        .args(["-select_streams", "v:0"])
+        .args(["-show_entries", "stream=nb_frames"])
+        .args(["-of", "default=nw=1:nk=1"])
+        .arg(in_file)
+        .output()
+        .expect("failed to execute process");
+
+    let frames = String::from_utf8(ffprobe_output.stdout).expect("7200");
+
+    let frame_count = match frames.trim().parse::<i32>() {
+        Ok(val) => val,
+        Err(e) => {
+            debug!("Error parsing frame count: {}", e);
+            7200 // Default: 2 minutes * 60 fps
+        }
+    };
+    frame_count
+}
+
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 // ffmpeg -ss 1:19 -to 2:00 -i input.mp4 -c:v copy -c:a aac -b:a 160k -ac 2 -filter_complex amerge=inputs=$(ffprobe -loglevel error -select_streams a -show_entries stream=index -of csv=p=0 input.mp4 | wc -l) output.mp4
 #[tauri::command(rename_all = "snake_case")]
@@ -81,7 +104,7 @@ pub fn run() {
             ]).build())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![call_ffmpeg])
+        .invoke_handler(tauri::generate_handler![call_ffmpeg, get_frame_count])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

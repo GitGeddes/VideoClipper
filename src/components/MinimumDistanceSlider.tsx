@@ -3,24 +3,18 @@
 */
 import { useState } from 'react';
 import Slider, { SliderProps } from '@mui/material/Slider';
+import { secondsToFormattedString } from '../util/converters';
 
 function valuetext(value: number, _index: number) {
     return `${secondsToFormattedString(value)}`;
-}
-
-function secondsToFormattedString(seconds: number): string {
-    let secs: number = seconds % 60;
-    let mins: number = Math.floor(seconds / 60);
-    if (secs < 10) return mins + ":0" + secs;
-    return mins + ":" + secs;
 }
 
 const minVal = 0;
 const minDistance = 5;
 
 type MinDistanceSliderProps = SliderProps & {
-    setStartTime: (time: string) => void;
-    setEndTime: (time: string) => void;
+    setStartTime: (time: number) => void;
+    setEndTime: (time: number) => void;
     seekToTime: (time: number) => void;
 };
 
@@ -36,22 +30,22 @@ export default function MinimumDistanceSlider(props: MinDistanceSliderProps) {
                 const start = clamped;
                 const end = clamped + minDistance;
                 setValues([start, end]);
-                props.setStartTime(secondsToFormattedString(start));
-                props.setEndTime(secondsToFormattedString(end));
+                props.setStartTime(start);
+                props.setEndTime(end);
                 props.seekToTime(start);
             } else {
                 const clamped = Math.max(newValue[1], minDistance);
                 const start = clamped - minDistance;
                 const end = clamped;
                 setValues([start, end]);
-                props.setStartTime(secondsToFormattedString(start));
-                props.setEndTime(secondsToFormattedString(end));
+                props.setStartTime(start);
+                props.setEndTime(end);
                 props.seekToTime(start);
             }
         } else {
             setValues(newValue);
-            props.setStartTime(secondsToFormattedString(newValue[0]));
-            props.setEndTime(secondsToFormattedString(newValue[1]));
+            props.setStartTime(newValue[0]);
+            props.setEndTime(newValue[1]);
             props.seekToTime(newValue[0]);
         }
     };

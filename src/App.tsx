@@ -6,13 +6,17 @@ import VideoPreview from "./components/VideoPreview";
 import MinimumDistanceSlider from "./components/MinimumDistanceSlider";
 import TimeInput from "./components/TimeInput";
 import CheckboxLabel from "./components/CheckboxLabel";
+import FilenameInput from "./components/FilenameInput";
+import { secondsToFormattedString } from "./util/converters";
 
 function App() {
     const playerRef = useRef<HTMLVideoElement | null>(null);
 
     const [duration, setDuration] = useState(0); // in seconds
-    const [startTime, setStartTime] = useState("");
-    const [endTime, setEndTime] = useState("");
+    const [totalFrames, setTotalFrames] = useState(0);
+    const [frameRate, setFramerate] = useState(0);
+    const [startTime, setStartTime] = useState(0);
+    const [endTime, setEndTime] = useState(0);
 
     const [inputFileName, setInputFileName] = useState("");
     const [inputFilePath, setInputFilePath] = useState("");
@@ -28,9 +32,11 @@ function App() {
         playerRef.current = player;
     }, []);
 
-    const onLoadedMetadata = useCallback(() => {
+    const onLoadedMetadata = useCallback(async () => {
         if (!playerRef.current) return;
-        setDuration(Math.floor(playerRef.current.duration));
+        let dur = Math.floor(playerRef.current.duration);
+        setDuration(dur);
+        setFramerate(Math.floor(totalFrames / dur));
     }, []);
 
     const seekToTime = useCallback((time: number) => {
@@ -49,6 +55,7 @@ function App() {
         });
         if (file) {
             setInputFilePath(file);
+            setTotalFrames(await invoke("get_frame_count", { in_file: file }));
             let arr = file.split("\\");
             setInputFileName(arr.pop() || "");
             setInputFolder(arr.join("\\"));
@@ -56,14 +63,14 @@ function App() {
     }
 
     async function call_ffmpeg() {
-        if (inputFilePath.length === 0 || startTime.length === 0 || endTime.length === 0) {
+        if (inputFilePath.length === 0 || startTime === 0 || endTime === 0) {
             setStatusMsg("Select a file, start time and end time");
             return;
         }
         await invoke<string>("call_ffmpeg",
         {
-            start: startTime,
-            end: endTime,
+            start: secondsToFormattedString(startTime),
+            end: secondsToFormattedString(endTime),
             in_file: inputFilePath,
             in_folder: inputFolder,
             audio_stream_count: doMuteMicrophone ? 1 : 2,
@@ -114,12 +121,16 @@ function App() {
                     text={"start"}
                     time={startTime}
                     setTime={setStartTime}
+                    totalFrames={totalFrames}
+                    framerate={frameRate}
                 />
                 {/* End time input */}
                 <TimeInput
                     text={"end"}
                     time={endTime}
                     setTime={setEndTime}
+                    totalFrames={totalFrames}
+                    framerate={frameRate}
                 />
             </section>
             <section className="row">
@@ -139,10 +150,10 @@ function App() {
                 </section>
                 <section className="column">
                     {/* Output filename text input */}
-                    <TimeInput
+                    <FilenameInput
                         text={"Filename"}
-                        time={outputFileName}
-                        setTime={setOutputFileName}
+                        filename={outputFileName}
+                        setFilename={setOutputFileName}
                     />
                     <p>{statusMsg}</p>
                 </section>
