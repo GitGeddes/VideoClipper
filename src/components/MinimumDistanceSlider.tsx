@@ -3,19 +3,22 @@
 */
 import { useState } from 'react';
 import Slider, { SliderProps } from '@mui/material/Slider';
-import { secondsToFormattedString } from '../util/converters';
+import { secondsToFormattedString, secondsToFrame } from '../util/converters';
 
 function valuetext(value: number, _index: number) {
     return `${secondsToFormattedString(value)}`;
 }
 
 const minVal = 0;
-const minDistance = 5;
+export const minDistance = 5;
 
 type MinDistanceSliderProps = SliderProps & {
     setStartTime: (time: number) => void;
     setEndTime: (time: number) => void;
+    setStartFrame: (frame: number) => void;
+    setEndFrame: (frame: number) => void;
     seekToTime: (time: number) => void;
+    framerate: number;
 };
 
 export default function MinimumDistanceSlider(props: MinDistanceSliderProps) {
@@ -30,25 +33,27 @@ export default function MinimumDistanceSlider(props: MinDistanceSliderProps) {
                 const start = clamped;
                 const end = clamped + minDistance;
                 setValues([start, end]);
-                props.setStartTime(start);
-                props.setEndTime(end);
-                props.seekToTime(start);
+                updateValues(start, end);
             } else {
                 const clamped = Math.max(newValue[1], minDistance);
                 const start = clamped - minDistance;
                 const end = clamped;
                 setValues([start, end]);
-                props.setStartTime(start);
-                props.setEndTime(end);
-                props.seekToTime(start);
+                updateValues(start, end);
             }
         } else {
             setValues(newValue);
-            props.setStartTime(newValue[0]);
-            props.setEndTime(newValue[1]);
-            props.seekToTime(newValue[0]);
+            updateValues(newValue[0], newValue[1]);
         }
     };
+
+    function updateValues(startTime: number, endTime: number) {
+        props.seekToTime(startTime);
+        props.setStartTime(startTime);
+        props.setEndTime(endTime);
+        props.setStartFrame(secondsToFrame(startTime, props.framerate));
+        props.setEndFrame(secondsToFrame(endTime, props.framerate));
+    }
 
     return (
         <Slider

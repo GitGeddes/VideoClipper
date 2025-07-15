@@ -3,20 +3,22 @@ import { invoke } from "@tauri-apps/api/core";
 import "./App.css";
 import { open } from "@tauri-apps/plugin-dialog";
 import VideoPreview from "./components/VideoPreview";
-import MinimumDistanceSlider from "./components/MinimumDistanceSlider";
+import MinimumDistanceSlider, { minDistance } from "./components/MinimumDistanceSlider";
 import TimeInput from "./components/TimeInput";
 import CheckboxLabel from "./components/CheckboxLabel";
 import FilenameInput from "./components/FilenameInput";
-import { secondsToFormattedString } from "./util/converters";
 
 function App() {
     const playerRef = useRef<HTMLVideoElement | null>(null);
 
     const [duration, setDuration] = useState(0); // in seconds
     const [totalFrames, setTotalFrames] = useState(0);
-    const [frameRate, setFramerate] = useState(0);
+    const [frameRate, setFrameRate] = useState(0);
+
     const [startTime, setStartTime] = useState(0);
     const [endTime, setEndTime] = useState(0);
+    const [startFrame, setStartFrame] = useState(0);
+    const [endFrame, setEndFrame] = useState(0);
 
     const [inputFileName, setInputFileName] = useState("");
     const [inputFilePath, setInputFilePath] = useState("");
@@ -34,10 +36,15 @@ function App() {
 
     const onLoadedMetadata = useCallback(async () => {
         if (!playerRef.current) return;
-        let dur = Math.floor(playerRef.current.duration);
+        let dur = Math.round(playerRef.current.duration);
         setDuration(dur);
-        setFramerate(Math.floor(totalFrames / dur));
-    }, []);
+        const framerate = Math.round(totalFrames / dur);
+        setFrameRate(framerate);
+        if (endTime === 0) {
+            setEndTime(minDistance);
+            setEndFrame(minDistance * framerate);
+        }
+    }, [totalFrames]);
 
     const seekToTime = useCallback((time: number) => {
         if (!playerRef.current) return;
@@ -55,7 +62,8 @@ function App() {
         });
         if (file) {
             setInputFilePath(file);
-            setTotalFrames(await invoke("get_frame_count", { in_file: file }));
+            const frame_count: number = await invoke("get_frame_count", { in_file: file });
+            setTotalFrames(frame_count);
             let arr = file.split("\\");
             setInputFileName(arr.pop() || "");
             setInputFolder(arr.join("\\"));
@@ -63,27 +71,29 @@ function App() {
     }
 
     async function call_ffmpeg() {
-        if (inputFilePath.length === 0 || startTime === 0 || endTime === 0) {
+        setStatusMsg("");
+        if (inputFilePath.length === 0 || endTime === 0) {
             setStatusMsg("Select a file, start time and end time");
             return;
         }
-        await invoke<string>("call_ffmpeg",
-        {
-            start: secondsToFormattedString(startTime),
-            end: secondsToFormattedString(endTime),
+        const ffmpegParams = {
+            start: startFrame / frameRate,
+            end: endFrame / frameRate,
             in_file: inputFilePath,
             in_folder: inputFolder,
             audio_stream_count: doMuteMicrophone ? 1 : 2,
             out_file: outputFileName + ".mp4",
             do_overwrite: doOverwriteFile ? "-y" : "-n"
-        }).then((msg) => {
+        };
+        await invoke<string>("call_ffmpeg", ffmpegParams)
+        .then((msg) => {
             if (msg !== "exit code: 0") {
-                setStatusMsg("Error! Only 1 audio track? Try muting mic track.")
+                setStatusMsg("Error! Only 1 audio track? Try muting mic track.");
             } else {
                 setStatusMsg("Processing complete");
             }
         }).catch((e) => {
-            console.debug("error!!", e);
+            console.debug("Error invoking call_ffmpeg:", e);
         });
     }
 
@@ -112,7 +122,10 @@ function App() {
                     max={duration}
                     setStartTime={setStartTime}
                     setEndTime={setEndTime}
+                    setStartFrame={setStartFrame}
+                    setEndFrame={setEndFrame}
                     seekToTime={seekToTime}
+                    framerate={frameRate}
                 />
             </div>
             <section className="row">
@@ -123,6 +136,9 @@ function App() {
                     setTime={setStartTime}
                     totalFrames={totalFrames}
                     framerate={frameRate}
+                    currentFrame={startFrame}
+                    setCurrentFrame={setStartFrame}
+                    seekToTime={seekToTime}
                 />
                 {/* End time input */}
                 <TimeInput
@@ -131,6 +147,9 @@ function App() {
                     setTime={setEndTime}
                     totalFrames={totalFrames}
                     framerate={frameRate}
+                    currentFrame={endFrame}
+                    setCurrentFrame={setEndFrame}
+                    seekToTime={seekToTime}
                 />
             </section>
             <section className="row">

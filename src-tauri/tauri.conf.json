@@ -13,8 +13,8 @@
     "windows": [
       {
         "title": "Video Clipper",
-        "width": 775,
-        "height": 740
+        "width": 675,
+        "height": 675
       }
     ],
     "security": {

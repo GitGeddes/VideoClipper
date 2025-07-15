@@ -11,3 +11,7 @@ export function formattedStringToSeconds(time: string): number {
     let secs = splits[1];
     return Number.parseInt(mins) * 60 + Number.parseInt(secs);
 }
+
+export function secondsToFrame(seconds: number, framerate: number): number {
+    return seconds * framerate;
+}
